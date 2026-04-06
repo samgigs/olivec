@@ -257,6 +257,21 @@
     line-height: 1.7;
   }
   .product-card .specs strong { color: var(--text); }
+  .product-card { position: relative; }
+  .product-copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--darker);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .product-copy-btn:hover { color: var(--orange); border-color: var(--orange); }
   .product-tag {
     display: inline-block;
     background: rgba(244, 121, 32, 0.15);
@@ -582,6 +597,7 @@
     <h3>Temporary Fence Panels</h3>
     <div class="product-grid">
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">BEST SELLER</span>
         <h4>6H Fence Panel</h4>
         <div class="specs">
@@ -602,6 +618,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">PANEL</span>
         <h4>4H Fence Panel</h4>
         <div class="specs">
@@ -616,6 +633,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">PANEL</span>
         <h4>8H Fence Panel</h4>
         <div class="specs">
@@ -638,6 +656,7 @@
     <h3>Fence Gates</h3>
     <div class="product-grid">
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">GATE</span>
         <h4>6H Fence Gate</h4>
         <div class="specs">
@@ -652,6 +671,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">GATE</span>
         <h4>4H Fence Gate</h4>
         <div class="specs">
@@ -659,16 +679,6 @@
           <strong>Height:</strong> 48"H<br>
           <strong>Container Qty:</strong> 610 gates<br>
           <strong>Finishes:</strong> Black PVC standard<br>
-          <strong>Includes:</strong> 1 stand + 1 top connector
-        </div>
-      </div>
-      <div class="product-card">
-        <span class="product-tag">GATE</span>
-        <h4>8H Fence Gate</h4>
-        <div class="specs">
-          <strong>Height:</strong> 96"H<br>
-          <strong>Container Qty:</strong> 460 gates<br>
-          <strong>FOB Cost:</strong> $89 CAD/set<br>
           <strong>Includes:</strong> 1 stand + 1 top connector
         </div>
       </div>
@@ -680,6 +690,7 @@
     <h3>Crowd Control</h3>
     <div class="product-grid">
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">CROWD CONTROL</span>
         <h4>Crowd Barrier</h4>
         <div class="specs">
@@ -696,6 +707,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">PREMIUM</span>
         <h4>Stage Barriers (Aluminum 6061-T6)</h4>
         <div class="specs">
@@ -718,6 +730,7 @@
     <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem;">4 main components — tested under OSHA & OHSA regulations. Ontario Reg. 213/91 mandates fall protection at 3m+. WorkSafeBC requires guardrails or equivalent.</p>
     <div class="product-grid">
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">FALL PREVENTION</span>
         <h4>Compression Post (Adjustable Fast Post)</h4>
         <div class="specs">
@@ -731,6 +744,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">FALL PREVENTION</span>
         <h4>Edge Panel (Full)</h4>
         <div class="specs">
@@ -745,6 +759,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">FALL PREVENTION</span>
         <h4>Edge Panel (Half)</h4>
         <div class="specs">
@@ -756,6 +771,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">FALL PREVENTION</span>
         <h4>Slab Grab</h4>
         <div class="specs">
@@ -769,6 +785,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">FALL PREVENTION</span>
         <h4>Curb Grab</h4>
         <div class="specs">
@@ -779,6 +796,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">ACCESSORIES</span>
         <h4>Edge Protection Accessories</h4>
         <div class="specs">
@@ -796,6 +814,7 @@
     <h3>Fencing Accessories</h3>
     <div class="product-grid">
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <h4>Stand</h4>
         <div class="specs">
           <strong>Weight:</strong> 10 lbs<br>
@@ -807,6 +826,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <h4>Top Connector</h4>
         <div class="specs">
           <strong>Weight:</strong> 2 lbs<br>
@@ -817,6 +837,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <h4>Security Clamp</h4>
         <div class="specs">
           <strong>Weight:</strong> 0.5 lbs<br>
@@ -828,6 +849,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <h4>U-Bolt Security Clamp</h4>
         <div class="specs">
           <strong>Weight:</strong> ~0.5 lbs<br>
@@ -836,6 +858,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <h4>Ground Pin</h4>
         <div class="specs">
           <strong>Weight:</strong> 2 lbs<br>
@@ -846,6 +869,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <h4>Jersey Barrier Bracket</h4>
         <div class="specs">
           <strong>Weight:</strong> 10 lbs<br>
@@ -858,6 +882,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <h4>Wheel Assembly</h4>
         <div class="specs">
           <strong>Weight:</strong> 17 lbs<br>
@@ -868,6 +893,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <h4>Wind Brace</h4>
         <div class="specs">
           <strong>Weight:</strong> 10 lbs<br>
@@ -878,6 +904,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <h4>Barb Wire Adaptor</h4>
         <div class="specs">
           <strong>Finish:</strong> Hot-Dipped Galvanized<br>
@@ -892,6 +919,7 @@
     <h3>Site Add-ons</h3>
     <div class="product-grid">
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">NOISE CONTROL</span>
         <h4>Noise Barrier</h4>
         <div class="specs">
@@ -907,6 +935,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">PRIVACY</span>
         <h4>Privacy Mesh</h4>
         <div class="specs">
@@ -920,6 +949,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">SAFETY</span>
         <h4>Safety Ramp</h4>
         <div class="specs">
@@ -932,6 +962,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">STORAGE</span>
         <h4>Storage Rack</h4>
         <div class="specs">
@@ -945,6 +976,7 @@
         </div>
       </div>
       <div class="product-card">
+        <button class="product-copy-btn" onclick="copyProductCard(this)">Copy</button>
         <span class="product-tag">BRANDING</span>
         <h4>Logo Plates</h4>
         <div class="specs">
@@ -1396,6 +1428,17 @@ function copyQuote() {
     const btn = document.querySelector('.copy-btn');
     btn.textContent = 'Copied!';
     setTimeout(() => btn.textContent = 'Copy to clipboard', 2000);
+  });
+}
+
+function copyProductCard(btn) {
+  const card = btn.closest('.product-card');
+  const title = card.querySelector('h4').textContent;
+  const specs = card.querySelector('.specs').innerText;
+  const text = title + '\n' + specs;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
   });
 }
 
