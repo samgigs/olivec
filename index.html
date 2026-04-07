@@ -1780,38 +1780,30 @@ async function fetchStock() {
       }
     } catch(e) { console.warn('Base StockLevels query failed:', e.message); }
 
-    // 2) With page param: returns paginated stock (other products)
-    // Fetch all pages 1-10 in parallel (API may return varying page sizes)
-    const pagePromises = [];
-    for (let p = 1; p <= 10; p++) {
-      const query = `{
-        StockLevels(page: ${p}) {
-          edges {
-            node {
-              label
-              sku
-              on_hand
-              available
-              location_id
-            }
-          }
-        }
-      }`;
-      pagePromises.push(
-        fetch(workerUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query })
-        }).then(r => r.json()).then(j => {
+    // 2) With page param: fetch sequentially (Erplain rate-limits parallel requests)
+    async function fetchPage(p, retries) {
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+          if (attempt > 0) await new Promise(r => setTimeout(r, 500));
+          const r = await fetch(workerUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: `{ StockLevels(page: ${p}) { edges { node { label sku on_hand available location_id } } } }` })
+          });
+          const j = await r.json();
           if (j.data && j.data.StockLevels && j.data.StockLevels.edges && j.data.StockLevels.edges.node) {
             return j.data.StockLevels.edges.node;
           }
-          return [];
-        }).catch(() => [])
-      );
+        } catch(e) { /* retry */ }
+      }
+      return [];
     }
-    const pageResults = await Promise.all(pagePromises);
-    pageResults.forEach(nodes => { allNodes = allNodes.concat(nodes); });
+    let emptyStreak = 0;
+    for (let p = 1; p <= 10; p++) {
+      const nodes = await fetchPage(p, 2);
+      if (nodes.length === 0) { emptyStreak++; if (emptyStreak >= 3) break; }
+      else { emptyStreak = 0; allNodes = allNodes.concat(nodes); }
+    }
 
     // Deduplicate by sku + location_id
     const seen = new Set();
