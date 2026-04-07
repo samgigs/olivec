@@ -1737,7 +1737,6 @@ async function fetchStock() {
       const nodes = (json.data && json.data.StockLevels && json.data.StockLevels.edges && json.data.StockLevels.edges.node) || [];
       if (nodes.length === 0) break;
       allNodes = allNodes.concat(nodes);
-      if (nodes.length < 50) break;
       page++;
     }
 
