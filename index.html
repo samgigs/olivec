@@ -1673,8 +1673,33 @@ async function fetchStock() {
       });
     }
 
-    // Fetch all stock levels with pagination (50 per page)
-    let allNodes = [];
+    // Erplain returns different datasets with/without page param — fetch both and merge
+    // 1) Without page: returns variant-level stock (STAND, SC, TC, etc.)
+    const baseQuery = `{
+      StockLevels {
+        edges {
+          node {
+            label
+            sku
+            on_hand
+            available
+            location_id
+            variant_id
+          }
+        }
+      }
+    }`;
+    const baseResp = await fetch(workerUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: baseQuery })
+    });
+    if (!baseResp.ok) throw new Error('API returned ' + baseResp.status);
+    const baseJson = await baseResp.json();
+    if (baseJson.errors) throw new Error(baseJson.errors[0].message);
+    let allNodes = [...baseJson.data.StockLevels.edges.node];
+
+    // 2) With page param: returns paginated stock (other products)
     let page = 1;
     while (page <= 20) {
       const query = `{
@@ -1700,15 +1725,23 @@ async function fetchStock() {
 
       if (!resp.ok) throw new Error('API returned ' + resp.status);
       const json = await resp.json();
-
       if (json.errors) throw new Error(json.errors[0].message);
 
       const nodes = json.data.StockLevels.edges.node;
       if (nodes.length === 0) break;
       allNodes = allNodes.concat(nodes);
-      if (nodes.length < 50) break; // last page
+      if (nodes.length < 50) break;
       page++;
     }
+
+    // Deduplicate by sku + location_id
+    const seen = new Set();
+    allNodes = allNodes.filter(n => {
+      const key = n.sku + '|' + n.location_id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 
     // Attach location name and filter out non-warehouse locations + hidden SKUs
     const hiddenLocations = ['Olivec Canada Direct Order', 'Unknown'];
