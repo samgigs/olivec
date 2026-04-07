@@ -1673,38 +1673,48 @@ async function fetchStock() {
       });
     }
 
-    // Fetch stock levels
-    const query = `{
-      StockLevels {
-        edges {
-          node {
-            label
-            sku
-            on_hand
-            available
-            location_id
+    // Fetch all stock levels with pagination (50 per page)
+    let allNodes = [];
+    let page = 1;
+    while (page <= 20) {
+      const query = `{
+        StockLevels(page: ${page}) {
+          edges {
+            node {
+              label
+              sku
+              on_hand
+              available
+              location_id
+            }
           }
         }
-      }
-    }`;
+      }`;
 
-    const resp = await fetch(workerUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query })
-    });
+      const resp = await fetch(workerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
 
-    if (!resp.ok) throw new Error('API returned ' + resp.status);
-    const json = await resp.json();
+      if (!resp.ok) throw new Error('API returned ' + resp.status);
+      const json = await resp.json();
 
-    if (json.errors) throw new Error(json.errors[0].message);
+      if (json.errors) throw new Error(json.errors[0].message);
 
-    const nodes = json.data.StockLevels.edges.node;
-    // Attach location name from the map
-    stockData = nodes.map(n => ({
+      const nodes = json.data.StockLevels.edges.node;
+      if (nodes.length === 0) break;
+      allNodes = allNodes.concat(nodes);
+      if (nodes.length < 50) break; // last page
+      page++;
+    }
+
+    // Attach location name and filter out non-warehouse locations
+    const hiddenLocations = ['Olivec Canada Direct Order', 'Unknown'];
+    stockData = allNodes.map(n => ({
       ...n,
       location_label: locationMap[n.location_id] || 'Unknown'
-    }));
+    })).filter(n => !hiddenLocations.includes(n.location_label));
 
     // Extract unique locations
     const locSet = {};
