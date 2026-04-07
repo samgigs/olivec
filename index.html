@@ -1708,10 +1708,11 @@ async function fetchStock() {
     } catch(e) { console.warn('Base StockLevels query failed:', e.message); }
 
     // 2) With page param: returns paginated stock (other products)
-    let page = 1;
-    while (page <= 20) {
+    // Fetch all pages 1-10 in parallel (API may return varying page sizes)
+    const pagePromises = [];
+    for (let p = 1; p <= 10; p++) {
       const query = `{
-        StockLevels(page: ${page}) {
+        StockLevels(page: ${p}) {
           edges {
             node {
               label
@@ -1723,22 +1724,21 @@ async function fetchStock() {
           }
         }
       }`;
-
-      const resp = await fetch(workerUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query })
-      });
-
-      if (!resp.ok) throw new Error('Page ' + page + ': API returned ' + resp.status);
-      const json = await resp.json();
-      if (json.errors) throw new Error('Page ' + page + ': ' + json.errors[0].message);
-
-      const nodes = (json.data && json.data.StockLevels && json.data.StockLevels.edges && json.data.StockLevels.edges.node) || [];
-      if (nodes.length === 0) break;
-      allNodes = allNodes.concat(nodes);
-      page++;
+      pagePromises.push(
+        fetch(workerUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query })
+        }).then(r => r.json()).then(j => {
+          if (j.data && j.data.StockLevels && j.data.StockLevels.edges && j.data.StockLevels.edges.node) {
+            return j.data.StockLevels.edges.node;
+          }
+          return [];
+        }).catch(() => [])
+      );
     }
+    const pageResults = await Promise.all(pagePromises);
+    pageResults.forEach(nodes => { allNodes = allNodes.concat(nodes); });
 
     // Deduplicate by sku + location_id
     const seen = new Set();
