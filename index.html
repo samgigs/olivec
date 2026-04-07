@@ -1658,55 +1658,36 @@ async function fetchStock() {
   document.getElementById('stock-status').style.color = 'var(--muted)';
 
   try {
-    // Fetch all stock levels with pagination
-    let allNodes = [];
-    let hasNext = true;
-    let cursor = '';
-    let page = 0;
-
-    while (hasNext && page < 20) {
-      const afterArg = cursor ? `(after: "${cursor}")` : '';
-      const query = `{
-        StockLevels${afterArg} {
-          edges {
-            node {
+    const query = `{
+      StockLevels {
+        edges {
+          node {
+            label
+            sku
+            on_hand
+            available
+            location {
+              id
               label
-              sku
-              on_hand
-              available
-              location {
-                id
-                label
-              }
             }
           }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
         }
-      }`;
+      }
+    }`;
 
-      const resp = await fetch(workerUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query })
-      });
+    const resp = await fetch(workerUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query })
+    });
 
-      if (!resp.ok) throw new Error('API returned ' + resp.status);
-      const json = await resp.json();
+    if (!resp.ok) throw new Error('API returned ' + resp.status);
+    const json = await resp.json();
 
-      if (json.errors) throw new Error(json.errors[0].message);
+    if (json.errors) throw new Error(json.errors[0].message);
 
-      const edges = json.data.StockLevels.edges;
-      edges.forEach(e => allNodes.push(e.node));
-
-      hasNext = json.data.StockLevels.pageInfo.hasNextPage;
-      cursor = json.data.StockLevels.pageInfo.endCursor || '';
-      page++;
-    }
-
-    stockData = allNodes;
+    const edges = json.data.StockLevels.edges;
+    stockData = edges.map(e => e.node);
 
     // Extract unique locations
     const locMap = {};
