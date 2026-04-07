@@ -1696,13 +1696,16 @@ async function fetchStock() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query: baseQuery })
     });
-    if (!baseResp.ok) throw new Error('Base query: API returned ' + baseResp.status);
-    const baseJson = await baseResp.json();
-    if (baseJson.errors) throw new Error('Base query: ' + baseJson.errors[0].message);
     let allNodes = [];
-    if (baseJson.data && baseJson.data.StockLevels && baseJson.data.StockLevels.edges && baseJson.data.StockLevels.edges.node) {
-      allNodes = [...baseJson.data.StockLevels.edges.node];
-    }
+    let baseCount = 0;
+    try {
+      if (!baseResp.ok) throw new Error('API returned ' + baseResp.status);
+      const baseJson = await baseResp.json();
+      if (!baseJson.errors && baseJson.data && baseJson.data.StockLevels && baseJson.data.StockLevels.edges && baseJson.data.StockLevels.edges.node) {
+        allNodes = [...baseJson.data.StockLevels.edges.node];
+        baseCount = allNodes.length;
+      }
+    } catch(e) { console.warn('Base StockLevels query failed:', e.message); }
 
     // 2) With page param: returns paginated stock (other products)
     let page = 1;
@@ -1716,7 +1719,6 @@ async function fetchStock() {
               on_hand
               available
               location_id
-              variant_id
             }
           }
         }
@@ -1769,7 +1771,7 @@ async function fetchStock() {
     renderStockTable();
 
     const now = new Date().toLocaleTimeString();
-    document.getElementById('stock-status').textContent = 'Updated ' + now + ' — ' + stockData.length + ' records';
+    document.getElementById('stock-status').textContent = 'Updated ' + now + ' — ' + stockData.length + ' records (base: ' + baseCount + ', paged: ' + (stockData.length - baseCount) + ')';
     document.getElementById('stock-status').style.color = 'var(--green)';
 
   } catch(err) {
