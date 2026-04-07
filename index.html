@@ -1679,10 +1679,10 @@ async function fetchStock() {
                 label
               }
             }
-            cursor
           }
           pageInfo {
             hasNextPage
+            endCursor
           }
         }
       }`;
@@ -1702,7 +1702,7 @@ async function fetchStock() {
       edges.forEach(e => allNodes.push(e.node));
 
       hasNext = json.data.StockLevels.pageInfo.hasNextPage;
-      if (edges.length > 0) cursor = edges[edges.length - 1].cursor;
+      cursor = json.data.StockLevels.pageInfo.endCursor || '';
       page++;
     }
 
