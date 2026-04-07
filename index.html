@@ -1780,29 +1780,28 @@ async function fetchStock() {
       }
     } catch(e) { console.warn('Base StockLevels query failed:', e.message); }
 
-    // 2) With page param: fetch sequentially (Erplain rate-limits parallel requests)
-    async function fetchPage(p, retries) {
-      for (let attempt = 0; attempt <= retries; attempt++) {
-        try {
-          if (attempt > 0) await new Promise(r => setTimeout(r, 500));
-          const r = await fetch(workerUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: `{ StockLevels(page: ${p}) { edges { node { label sku on_hand available location_id } } } }` })
-          });
-          const j = await r.json();
-          if (j.data && j.data.StockLevels && j.data.StockLevels.edges && j.data.StockLevels.edges.node) {
-            return j.data.StockLevels.edges.node;
-          }
-        } catch(e) { /* retry */ }
-      }
+    // 2) With page param: fetch in batches of 2 with delays (Erplain rate-limits)
+    async function fetchPage(p) {
+      try {
+        const r = await fetch(workerUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: `{ StockLevels(page: ${p}) { edges { node { label sku on_hand available location_id } } } }` })
+        });
+        const j = await r.json();
+        if (j.data && j.data.StockLevels && j.data.StockLevels.edges && j.data.StockLevels.edges.node) {
+          return j.data.StockLevels.edges.node;
+        }
+      } catch(e) { /* failed */ }
       return [];
     }
-    let emptyStreak = 0;
-    for (let p = 1; p <= 10; p++) {
-      const nodes = await fetchPage(p, 2);
-      if (nodes.length === 0) { emptyStreak++; if (emptyStreak >= 3) break; }
-      else { emptyStreak = 0; allNodes = allNodes.concat(nodes); }
+    // Fetch pages 1-8 in batches of 2, with 1.5s gap between batches
+    for (let batch = 0; batch < 4; batch++) {
+      const p1 = batch * 2 + 1;
+      const p2 = batch * 2 + 2;
+      if (batch > 0) await new Promise(r => setTimeout(r, 1500));
+      const [nodes1, nodes2] = await Promise.all([fetchPage(p1), fetchPage(p2)]);
+      allNodes = allNodes.concat(nodes1, nodes2);
     }
 
     // Deduplicate by sku + location_id
