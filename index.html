@@ -1658,6 +1658,22 @@ async function fetchStock() {
   document.getElementById('stock-status').style.color = 'var(--muted)';
 
   try {
+    // Fetch locations first to map IDs to names
+    const locQuery = `{ Locations { edges { node { id label } } } }`;
+    const locResp = await fetch(workerUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: locQuery })
+    });
+    const locJson = await locResp.json();
+    const locationMap = {};
+    if (locJson.data && locJson.data.Locations) {
+      locJson.data.Locations.edges.node.forEach(loc => {
+        locationMap[loc.id] = loc.label;
+      });
+    }
+
+    // Fetch stock levels
     const query = `{
       StockLevels {
         edges {
@@ -1666,10 +1682,7 @@ async function fetchStock() {
             sku
             on_hand
             available
-            location {
-              id
-              label
-            }
+            location_id
           }
         }
       }
@@ -1686,17 +1699,19 @@ async function fetchStock() {
 
     if (json.errors) throw new Error(json.errors[0].message);
 
-    const edges = json.data.StockLevels.edges;
-    stockData = edges.map(e => e.node);
+    const nodes = json.data.StockLevels.edges.node;
+    // Attach location name from the map
+    stockData = nodes.map(n => ({
+      ...n,
+      location_label: locationMap[n.location_id] || 'Unknown'
+    }));
 
     // Extract unique locations
-    const locMap = {};
+    const locSet = {};
     stockData.forEach(n => {
-      if (n.location && n.location.label) {
-        locMap[n.location.label] = true;
-      }
+      locSet[n.location_label] = true;
     });
-    stockLocations = Object.keys(locMap).sort();
+    stockLocations = Object.keys(locSet).sort();
 
     // Build location tabs
     renderLocationTabs();
@@ -1739,7 +1754,7 @@ function renderStockTable() {
 
   let filtered = stockData;
   if (activeLocation !== 'all') {
-    filtered = stockData.filter(n => n.location && n.location.label === activeLocation);
+    filtered = stockData.filter(n => n.location_label === activeLocation);
   }
 
   // Sort by label
@@ -1761,7 +1776,7 @@ function renderStockTable() {
     totalOnHand += onHand;
     totalAvailable += avail;
 
-    const loc = (activeLocation === 'all' && n.location) ? ` <span style="color:var(--muted); font-size:0.75rem;">(${n.location.label})</span>` : '';
+    const loc = (activeLocation === 'all' && n.location_label) ? ` <span style="color:var(--muted); font-size:0.75rem;">(${n.location_label})</span>` : '';
     const lowStock = avail <= 0 ? 'color:var(--red); font-weight:700;' : avail < 20 ? 'color:var(--orange); font-weight:700;' : '';
 
     html += `<tr>
