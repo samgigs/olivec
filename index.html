@@ -1694,10 +1694,13 @@ async function fetchStock() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query: baseQuery })
     });
-    if (!baseResp.ok) throw new Error('API returned ' + baseResp.status);
+    if (!baseResp.ok) throw new Error('Base query: API returned ' + baseResp.status);
     const baseJson = await baseResp.json();
-    if (baseJson.errors) throw new Error(baseJson.errors[0].message);
-    let allNodes = [...baseJson.data.StockLevels.edges.node];
+    if (baseJson.errors) throw new Error('Base query: ' + baseJson.errors[0].message);
+    let allNodes = [];
+    if (baseJson.data && baseJson.data.StockLevels && baseJson.data.StockLevels.edges && baseJson.data.StockLevels.edges.node) {
+      allNodes = [...baseJson.data.StockLevels.edges.node];
+    }
 
     // 2) With page param: returns paginated stock (other products)
     let page = 1;
@@ -1723,11 +1726,11 @@ async function fetchStock() {
         body: JSON.stringify({ query })
       });
 
-      if (!resp.ok) throw new Error('API returned ' + resp.status);
+      if (!resp.ok) throw new Error('Page ' + page + ': API returned ' + resp.status);
       const json = await resp.json();
-      if (json.errors) throw new Error(json.errors[0].message);
+      if (json.errors) throw new Error('Page ' + page + ': ' + json.errors[0].message);
 
-      const nodes = json.data.StockLevels.edges.node;
+      const nodes = (json.data && json.data.StockLevels && json.data.StockLevels.edges && json.data.StockLevels.edges.node) || [];
       if (nodes.length === 0) break;
       allNodes = allNodes.concat(nodes);
       if (nodes.length < 50) break;
