@@ -316,6 +316,75 @@
     margin-left: 0.5rem;
   }
   .copy-btn:hover { color: var(--orange); border-color: var(--orange); }
+
+  /* ========== MOBILE RESPONSIVE ========== */
+  @media (max-width: 768px) {
+    header { padding: 1.2rem 1rem; }
+    header h1 { font-size: 1.6rem; }
+    header p { font-size: 0.85rem; }
+
+    nav { gap: 0.3rem; padding: 0.6rem 0.5rem; }
+    nav button { padding: 0.45rem 0.8rem; font-size: 0.75rem; }
+
+    .section { padding: 0 0.8rem; margin: 1rem auto; }
+    .section-title { font-size: 1.3rem; }
+    .section-sub { font-size: 0.85rem; margin-bottom: 1rem; }
+
+    .card { padding: 1rem; margin-bottom: 1rem; }
+    .card h3 { font-size: 1rem; }
+
+    .btn { padding: 0.55rem 1.2rem; font-size: 0.85rem; }
+
+    .product-grid { grid-template-columns: 1fr; }
+
+    table { font-size: 0.78rem; }
+    th, td { padding: 0.4rem 0.5rem; }
+
+    .result-row { font-size: 0.85rem; flex-wrap: wrap; }
+
+    .pricing-tabs { gap: 0.3rem; }
+    .pricing-tabs button { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
+
+    /* Skid builder responsive */
+    .skid-block .form-row { grid-template-columns: 1fr !important; }
+
+    /* Stock section */
+    #stock-config input[type="text"] { font-size: 0.8rem; }
+    #panel-totals div[style*="display:flex"] { gap: 6px !important; }
+    #panel-totals div[style*="min-width"] { min-width: 80px !important; padding: 0.5rem 0.6rem !important; }
+    #panel-totals div[style*="font-size:1.3rem"] { font-size: 1.1rem !important; }
+
+    /* Summary cards at bottom of stock */
+    #stock-summary { flex-wrap: wrap !important; }
+    #stock-summary > div { min-width: 100px !important; flex: 1 1 45% !important; }
+  }
+
+  @media (max-width: 480px) {
+    header h1 { font-size: 1.3rem; }
+
+    nav { gap: 0.2rem; padding: 0.5rem 0.3rem; }
+    nav button { padding: 0.4rem 0.6rem; font-size: 0.7rem; flex: 1 1 auto; text-align: center; }
+
+    .section { padding: 0 0.5rem; }
+    .card { padding: 0.8rem; border-radius: 8px; }
+
+    select, input[type="number"], input[type="text"], input[type="email"], textarea { font-size: 0.85rem; padding: 0.5rem 0.6rem; }
+
+    table { font-size: 0.72rem; }
+    th, td { padding: 0.35rem 0.4rem; }
+
+    .product-card { padding: 1rem; }
+    .product-card h4 { font-size: 0.9rem; }
+    .product-card .specs { font-size: 0.8rem; }
+
+    .note-box { font-size: 0.8rem; padding: 0.6rem 0.8rem; }
+
+    /* Shipping quote header with reset */
+    .card > div[style*="justify-content:space-between"] { flex-wrap: wrap !important; gap: 0.5rem; }
+  }
+
+  /* Make tables horizontally scrollable on small screens */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 </style>
 </head>
 <body>
@@ -368,6 +437,7 @@
 
   <div class="card">
     <h3>Accessories</h3>
+    <div style="overflow-x:auto;">
     <table>
       <thead><tr><th>Accessory</th><th>Retail</th><th>Container Price</th></tr></thead>
       <tbody>
@@ -387,6 +457,7 @@
         <tr><td>Panel Holder (Storage Rack)</td><td>$1,200.00</td><td>$850.00</td></tr>
       </tbody>
     </table>
+    </div>
   </div>
 </div>
 
@@ -580,11 +651,13 @@
     <div id="ref-calc-breakdown" style="font-size:0.85rem; color:var(--muted); margin-top:0.5rem;"></div>
 
     <h3 style="margin-top:1.5rem;">Quick Reference — Common Loads</h3>
+    <div style="overflow-x:auto;">
     <table>
       <thead><tr><th>Load</th><th>Dimensions (L × W × H)</th><th>Weight</th><th>Notes</th></tr></thead>
       <tbody id="ref-table-body">
       </tbody>
     </table>
+    </div>
   </div>
 </div>
 
@@ -1076,21 +1149,21 @@ const cbPricing = {
 
 function renderPanelTable(city) {
   const data = panelPricing[city];
-  let html = '<table><thead><tr><th>Quantity</th><th>4H</th><th>6H</th><th>8H</th><th>Gate</th></tr></thead><tbody>';
+  let html = '<div style="overflow-x:auto;"><table><thead><tr><th>Quantity</th><th>4H</th><th>6H</th><th>8H</th><th>Gate</th></tr></thead><tbody>';
   for (const [tier, prices] of Object.entries(data)) {
     html += `<tr><td>${tier}</td>${prices.map(p => `<td>${typeof p === 'number' ? '$'+p : p}</td>`).join('')}</tr>`;
   }
-  html += '</tbody></table>';
+  html += '</tbody></table></div>';
   return html;
 }
 
 function renderCBTable(city) {
   const data = cbPricing[city];
-  let html = '<table><thead><tr><th>Quantity</th><th>Powder Coated</th><th>Hot-Dipped Galv.</th><th>Stainless Steel</th></tr></thead><tbody>';
+  let html = '<div style="overflow-x:auto;"><table><thead><tr><th>Quantity</th><th>Powder Coated</th><th>Hot-Dipped Galv.</th><th>Stainless Steel</th></tr></thead><tbody>';
   for (const [tier, prices] of Object.entries(data)) {
     html += `<tr><td>${tier}</td>${prices.map(p => `<td>$${p}</td>`).join('')}</tr>`;
   }
-  html += '</tbody></table>';
+  html += '</tbody></table></div>';
   return html;
 }
 
@@ -1805,6 +1878,7 @@ const PANEL_GROUPS = [
   { label: '6H Yellow', skus: ['TFPB69Y-PWD', 'TFPB69Y-PVC'] },
   { label: '6H Orange', skus: ['TFPB69O-PWD'] },
   { label: '6H Silver', skus: ['TFPB69S-PWD'] },
+  { label: '6H Galv', skus: ['TFPB69-HG'] },
   { label: '4H Black', skus: ['TFPB49BL-PVC'] },
   { label: '8H Black', skus: ['TFPB89BL-PVC', 'TFPB89BL-PWD'] },
   { label: '8H Yellow', skus: ['TFPB89Y-PVC', 'TFP89Y-PVC'] },
