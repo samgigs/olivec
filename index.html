@@ -1709,12 +1709,13 @@ async function fetchStock() {
       page++;
     }
 
-    // Attach location name and filter out non-warehouse locations
+    // Attach location name and filter out non-warehouse locations + hidden SKUs
     const hiddenLocations = ['Olivec Canada Direct Order', 'Unknown'];
+    const hiddenSkus = ['MS638-G','FSSKID','SC UBOLT','CUSTOM','CNR','ALU-BAR','CB47C-PWD','CB47-SS','DF68BL-GPWD','DFP-GM','DFP-IG','EP45S-PWD','EP49S-PWD','EP-POST','EPSG-POST','EPCG-POST','NRS-1','EDSC','SF450-O','PPB','OTHER','EP-POST2','SS','BWIREA'];
     stockData = allNodes.map(n => ({
       ...n,
       location_label: locationMap[n.location_id] || 'Unknown'
-    })).filter(n => !hiddenLocations.includes(n.location_label));
+    })).filter(n => !hiddenLocations.includes(n.location_label) && !hiddenSkus.includes(n.sku));
 
     // Extract unique locations
     const locSet = {};
