@@ -1019,6 +1019,8 @@
 
     <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;" id="stock-location-tabs"></div>
 
+    <div id="panel-totals" style="display:none; margin-bottom:1.2rem;"></div>
+
     <div id="stock-loading" style="display:none; text-align:center; padding:2rem; color:var(--muted);">
       Loading stock data...
     </div>
@@ -1761,8 +1763,9 @@ async function fetchStock() {
     });
     stockLocations = Object.keys(locSet).sort();
 
-    // Build location tabs
+    // Build location tabs and panel totals
     renderLocationTabs();
+    renderPanelTotals();
     renderStockTable();
 
     const now = new Date().toLocaleTimeString();
@@ -1792,7 +1795,47 @@ function renderLocationTabs() {
 function filterLocation(loc) {
   activeLocation = loc;
   renderLocationTabs();
+  renderPanelTotals();
   renderStockTable();
+}
+
+const PANEL_GROUPS = [
+  { label: '6H Black', skus: ['TFPB69BL-PWD', 'TFPB69BL-PVC'] },
+  { label: '6H Yellow', skus: ['TFPB69Y-PWD', 'TFPB69Y-PVC'] },
+  { label: '6H Orange', skus: ['TFPB69O-PWD'] },
+  { label: '6H Silver', skus: ['TFPB69S-PWD'] },
+  { label: '4H Black', skus: ['TFPB49BL-PVC'] },
+  { label: '8H Black', skus: ['TFPB89BL-PVC', 'TFPB89BL-PWD'] },
+  { label: '8H Yellow', skus: ['TFPB89Y-PVC', 'TFP89Y-PVC'] },
+];
+
+function renderPanelTotals() {
+  const el = document.getElementById('panel-totals');
+  if (!stockData || stockData.length === 0) { el.style.display = 'none'; return; }
+
+  let filtered = stockData;
+  if (activeLocation !== 'all') {
+    filtered = stockData.filter(n => n.location_label === activeLocation);
+  }
+
+  let html = '<div style="font-size:0.8rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">Total Panels</div>';
+  html += '<div style="display:flex; gap:10px; flex-wrap:wrap;">';
+
+  PANEL_GROUPS.forEach(g => {
+    let total = 0;
+    filtered.forEach(n => {
+      if (g.skus.includes(n.sku)) total += (n.on_hand || 0);
+    });
+    const color = total <= 0 ? 'var(--red)' : total < 50 ? 'var(--orange)' : 'var(--green)';
+    html += `<div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:0.6rem 1rem; min-width:110px; text-align:center;">
+      <div style="font-size:0.7rem; color:var(--muted); font-weight:700;">${g.label}</div>
+      <div style="font-size:1.3rem; font-weight:700; color:${color};">${total.toLocaleString()}</div>
+    </div>`;
+  });
+
+  html += '</div>';
+  el.innerHTML = html;
+  el.style.display = 'block';
 }
 
 function renderStockTable() {
