@@ -336,6 +336,7 @@
     .btn { padding: 0.55rem 1.2rem; font-size: 0.85rem; }
 
     .product-grid { grid-template-columns: 1fr; }
+    #payment .card > div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
 
     table { font-size: 0.78rem; }
     th, td { padding: 0.4rem 0.5rem; }
@@ -1125,38 +1126,57 @@
   <p class="section-sub">Share the Helcim payment link with customers via email, text, or chat.</p>
 
   <div class="card">
-    <h3>Payment Link</h3>
-    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.2rem;">Copy the link or a ready-to-send message and share it with the customer.</p>
+    <h3>Quick Links</h3>
+    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.2rem;">Two link options — the clean URL is best for customer-facing emails.</p>
 
-    <div style="background:var(--darker); border:1px solid var(--border); border-radius:10px; padding:1.2rem; margin-bottom:1.2rem;">
-      <label style="margin-bottom:0.5rem;">Direct Link</label>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <input type="text" id="pay-link" value="https://olivec-canada.myhelcim.com/hosted/?token=cecbbe78c78a5eb24c2f1f" readonly style="flex:1; margin-bottom:0; background:var(--card); cursor:text; font-size:0.85rem;" />
-        <button class="btn" onclick="copyPayment('link')" style="white-space:nowrap; padding:0.6rem 1.2rem; font-size:0.85rem;">Copy Link</button>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.2rem;">
+      <div style="background:var(--darker); border:1px solid var(--border); border-radius:10px; padding:1.2rem;">
+        <label style="margin-bottom:0.5rem; color:var(--green);">Clean URL (Recommended)</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" id="pay-link-clean" value="https://olivec.ca/pay" readonly style="flex:1; margin-bottom:0; background:var(--card); cursor:text; font-size:0.85rem;" />
+          <button class="btn" onclick="copyPayment('clean')" style="white-space:nowrap; padding:0.6rem 1rem; font-size:0.85rem;">Copy</button>
+        </div>
+      </div>
+      <div style="background:var(--darker); border:1px solid var(--border); border-radius:10px; padding:1.2rem;">
+        <label style="margin-bottom:0.5rem;">Direct Helcim Link</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" id="pay-link-direct" value="https://olivec-canada.myhelcim.com/hosted/?token=cecbbe78c78a5eb24c2f1f" readonly style="flex:1; margin-bottom:0; background:var(--card); cursor:text; font-size:0.85rem;" />
+          <button class="btn-outline btn" onclick="copyPayment('direct')" style="white-space:nowrap; padding:0.6rem 1rem; font-size:0.85rem;">Copy</button>
+        </div>
       </div>
     </div>
+  </div>
+
+  <div class="card">
+    <h3>Email / Text Message</h3>
+    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.2rem;">Ready-to-paste message — add your own signature below.</p>
 
     <div style="background:var(--darker); border:1px solid var(--border); border-radius:10px; padding:1.2rem; margin-bottom:1.2rem;">
-      <label style="margin-bottom:0.5rem;">Email / Text Message (ready to paste)</label>
-      <textarea id="pay-message" readonly rows="6" style="margin-bottom:0; background:var(--card); cursor:text; font-size:0.85rem; line-height:1.6;">Hi,
+      <textarea id="pay-message" readonly rows="5" style="margin-bottom:0; background:var(--card); cursor:text; font-size:0.85rem; line-height:1.6;">Hi,
 
 Thank you for choosing Olivec Canada. Please use the secure link below to submit your payment:
 
-https://olivec-canada.myhelcim.com/hosted/?token=cecbbe78c78a5eb24c2f1f
+https://olivec.ca/pay
 
-If you have any questions, feel free to reach out.
-
-Thank you,
-Olivec Canada
-1-888-642-8889 | orders@olivec.ca</textarea>
+If you have any questions, feel free to reach out.</textarea>
       <div style="display:flex; gap:8px; margin-top:8px;">
         <button class="btn" onclick="copyPayment('message')" style="font-size:0.85rem; padding:0.6rem 1.2rem;">Copy Message</button>
-        <button class="btn-outline btn" onclick="copyPayment('link')" style="font-size:0.85rem; padding:0.6rem 1.2rem;">Copy Link Only</button>
       </div>
     </div>
-
-    <div id="pay-copied" style="display:none; padding:0.6rem 1rem; background:rgba(74,222,128,0.1); border:1px solid var(--green); border-radius:8px; color:var(--green); font-size:0.85rem; text-align:center;"></div>
   </div>
+
+  <div class="card">
+    <h3>QR Code</h3>
+    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.2rem;">Save or share the QR code — customers scan to open the payment page.</p>
+
+    <div style="background:var(--darker); border:1px solid var(--border); border-radius:10px; padding:1.5rem; text-align:center;">
+      <img src="olivec-pay-qr.png" alt="Olivec Payment QR Code" style="width:220px; height:220px; border-radius:8px; background:#fff; padding:12px;" />
+      <p style="color:var(--muted); font-size:0.8rem; margin-top:0.8rem;">Scan to pay — links to olivec.ca/pay</p>
+      <a href="olivec-pay-qr.png" download="olivec-pay-qr.png" class="btn" style="display:inline-block; margin-top:0.8rem; font-size:0.85rem; padding:0.6rem 1.2rem; text-decoration:none;">Download QR Code</a>
+    </div>
+  </div>
+
+  <div id="pay-copied" style="display:none; position:fixed; bottom:2rem; left:50%; transform:translateX(-50%); padding:0.7rem 1.5rem; background:rgba(74,222,128,0.15); border:1px solid var(--green); border-radius:10px; color:var(--green); font-size:0.9rem; text-align:center; z-index:200;"></div>
 </div>
 
 <footer>
@@ -1609,15 +1629,20 @@ function copyProductCard(btn) {
 }
 
 function copyPayment(type) {
-  let text;
-  if (type === 'link') {
-    text = document.getElementById('pay-link').value;
+  let text, msg;
+  if (type === 'clean') {
+    text = document.getElementById('pay-link-clean').value;
+    msg = 'Clean payment link copied!';
+  } else if (type === 'direct') {
+    text = document.getElementById('pay-link-direct').value;
+    msg = 'Direct Helcim link copied!';
   } else {
     text = document.getElementById('pay-message').value;
+    msg = 'Message copied — paste into email or text!';
   }
   navigator.clipboard.writeText(text).then(() => {
     const el = document.getElementById('pay-copied');
-    el.textContent = type === 'link' ? 'Payment link copied!' : 'Message copied — paste into email or text!';
+    el.textContent = msg;
     el.style.display = 'block';
     setTimeout(() => { el.style.display = 'none'; }, 3000);
   });
