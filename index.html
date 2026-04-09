@@ -400,6 +400,7 @@
   <button onclick="showSection('shipping')">Shipping Quote</button>
   <button onclick="showSection('products')">Product Info</button>
   <button onclick="showSection('stock')">Live Stock</button>
+  <button onclick="showSection('payment')">Payment Link</button>
 </nav>
 
 <!-- ========== 1. CONTAINER CALCULATOR (React) ========== -->
@@ -1118,6 +1119,46 @@
   </div>
 </div>
 
+<!-- ========== 6. PAYMENT LINK ========== -->
+<div id="payment" class="section">
+  <h2 class="section-title">Customer Payment Link</h2>
+  <p class="section-sub">Share the Helcim payment link with customers via email, text, or chat.</p>
+
+  <div class="card">
+    <h3>Payment Link</h3>
+    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.2rem;">Copy the link or a ready-to-send message and share it with the customer.</p>
+
+    <div style="background:var(--darker); border:1px solid var(--border); border-radius:10px; padding:1.2rem; margin-bottom:1.2rem;">
+      <label style="margin-bottom:0.5rem;">Direct Link</label>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <input type="text" id="pay-link" value="https://olivec-canada.myhelcim.com/hosted/?token=cecbbe78c78a5eb24c2f1f" readonly style="flex:1; margin-bottom:0; background:var(--card); cursor:text; font-size:0.85rem;" />
+        <button class="btn" onclick="copyPayment('link')" style="white-space:nowrap; padding:0.6rem 1.2rem; font-size:0.85rem;">Copy Link</button>
+      </div>
+    </div>
+
+    <div style="background:var(--darker); border:1px solid var(--border); border-radius:10px; padding:1.2rem; margin-bottom:1.2rem;">
+      <label style="margin-bottom:0.5rem;">Email / Text Message (ready to paste)</label>
+      <textarea id="pay-message" readonly rows="6" style="margin-bottom:0; background:var(--card); cursor:text; font-size:0.85rem; line-height:1.6;">Hi,
+
+Thank you for choosing Olivec Canada. Please use the secure link below to submit your payment:
+
+https://olivec-canada.myhelcim.com/hosted/?token=cecbbe78c78a5eb24c2f1f
+
+If you have any questions, feel free to reach out.
+
+Thank you,
+Olivec Canada
+1-888-642-8889 | orders@olivec.ca</textarea>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button class="btn" onclick="copyPayment('message')" style="font-size:0.85rem; padding:0.6rem 1.2rem;">Copy Message</button>
+        <button class="btn-outline btn" onclick="copyPayment('link')" style="font-size:0.85rem; padding:0.6rem 1.2rem;">Copy Link Only</button>
+      </div>
+    </div>
+
+    <div id="pay-copied" style="display:none; padding:0.6rem 1rem; background:rgba(74,222,128,0.1); border:1px solid var(--green); border-radius:8px; color:var(--green); font-size:0.85rem; text-align:center;"></div>
+  </div>
+</div>
+
 <footer>
   Olivec Canada Import Corp. &mdash; <a href="https://olivec.ca">olivec.ca</a> &mdash; 1-888-642-8889 &mdash; orders@olivec.ca<br>
   Vancouver &bull; Calgary &bull; Edmonton &bull; Toronto
@@ -1564,6 +1605,21 @@ function copyProductCard(btn) {
   navigator.clipboard.writeText(text).then(() => {
     btn.textContent = 'Copied!';
     setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+function copyPayment(type) {
+  let text;
+  if (type === 'link') {
+    text = document.getElementById('pay-link').value;
+  } else {
+    text = document.getElementById('pay-message').value;
+  }
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('pay-copied');
+    el.textContent = type === 'link' ? 'Payment link copied!' : 'Message copied — paste into email or text!';
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 3000);
   });
 }
 
