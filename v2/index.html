@@ -415,6 +415,25 @@
   <p class="section-sub">2026 pricing by warehouse location and quantity tier. All prices in CAD + tax.</p>
 
   <div class="card">
+    <h3>Length Converter</h3>
+    <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem;">Meters &harr; feet, and feet &rarr; panels at <strong style="color:var(--orange);">9.5 ft per panel</strong>. Edit either field.</p>
+    <div class="form-row" style="max-width:560px;">
+      <div>
+        <label>Meters</label>
+        <input type="number" id="conv-meters" placeholder="e.g. 30" oninput="convertLength('meters')" />
+      </div>
+      <div>
+        <label>Feet</label>
+        <input type="number" id="conv-feet" placeholder="e.g. 98.4" oninput="convertLength('feet')" />
+      </div>
+    </div>
+    <div class="result-box" style="margin-top:0;">
+      <div class="result-row"><span class="label">Length in feet</span><span class="value" id="conv-feet-out">&mdash;</span></div>
+      <div class="result-row total"><span class="label">Panels to cover (9.5 ft each)</span><span class="value" id="conv-panels">&mdash;</span></div>
+    </div>
+  </div>
+
+  <div class="card">
     <h3>Temporary Fence Panels</h3>
     <div class="pricing-tabs" id="panel-tabs">
       <button class="active" onclick="showCity('panel', 'calgary', this)">Calgary / Edmonton</button>
@@ -459,25 +478,6 @@
         <tr><td>Panel Holder (Storage Rack)</td><td>$1,200.00</td><td>$850.00</td></tr>
       </tbody>
     </table>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Length Converter</h3>
-    <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem;">Meters &harr; feet, and feet &rarr; panels at <strong style="color:var(--orange);">9.5 ft per panel</strong>. Edit either field.</p>
-    <div class="form-row" style="max-width:560px;">
-      <div>
-        <label>Meters</label>
-        <input type="number" id="conv-meters" placeholder="e.g. 30" oninput="convertLength('meters')" />
-      </div>
-      <div>
-        <label>Feet</label>
-        <input type="number" id="conv-feet" placeholder="e.g. 98.4" oninput="convertLength('feet')" />
-      </div>
-    </div>
-    <div class="result-box" style="margin-top:0;">
-      <div class="result-row"><span class="label">Length in feet</span><span class="value" id="conv-feet-out">&mdash;</span></div>
-      <div class="result-row total"><span class="label">Panels to cover (9.5 ft each)</span><span class="value" id="conv-panels">&mdash;</span></div>
     </div>
   </div>
 </div>
