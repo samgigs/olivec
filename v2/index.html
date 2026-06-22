@@ -461,6 +461,25 @@
     </table>
     </div>
   </div>
+
+  <div class="card">
+    <h3>Length Converter</h3>
+    <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem;">Meters &harr; feet, and feet &rarr; panels at <strong style="color:var(--orange);">9.5 ft per panel</strong>. Edit either field.</p>
+    <div class="form-row" style="max-width:560px;">
+      <div>
+        <label>Meters</label>
+        <input type="number" id="conv-meters" placeholder="e.g. 30" oninput="convertLength('meters')" />
+      </div>
+      <div>
+        <label>Feet</label>
+        <input type="number" id="conv-feet" placeholder="e.g. 98.4" oninput="convertLength('feet')" />
+      </div>
+    </div>
+    <div class="result-box" style="margin-top:0;">
+      <div class="result-row"><span class="label">Length in feet</span><span class="value" id="conv-feet-out">&mdash;</span></div>
+      <div class="result-row total"><span class="label">Panels to cover (9.5 ft each)</span><span class="value" id="conv-panels">&mdash;</span></div>
+    </div>
+  </div>
 </div>
 
 <!-- ========== 3. SHIPPING QUOTE REQUEST (CARRIER) ========== -->
@@ -1243,6 +1262,32 @@ function showCity(type, city, btn) {
 document.getElementById('panel-table').innerHTML = renderPanelTable('calgary');
 document.getElementById('cb-table').innerHTML = renderCBTable('calgary');
 
+// ===== LENGTH CONVERTER (meters <-> feet -> panels @ 9.5 ft/panel) =====
+const FEET_PER_PANEL = 9.5;
+function convertLength(source) {
+  const mEl = document.getElementById('conv-meters');
+  const ftEl = document.getElementById('conv-feet');
+  const ftOut = document.getElementById('conv-feet-out');
+  const pOut = document.getElementById('conv-panels');
+  let feet = 0;
+  let hasValue = false;
+  if (source === 'meters') {
+    const m = parseFloat(mEl.value);
+    hasValue = !isNaN(m);
+    feet = hasValue ? m * 3.28084 : 0;
+    ftEl.value = hasValue ? (Math.round(feet * 100) / 100) : '';
+  } else {
+    const ft = parseFloat(ftEl.value);
+    hasValue = !isNaN(ft);
+    feet = hasValue ? ft : 0;
+    mEl.value = hasValue ? (Math.round((feet / 3.28084) * 100) / 100) : '';
+  }
+  if (!hasValue) { ftOut.textContent = '—'; pOut.textContent = '—'; return; }
+  const panels = feet / FEET_PER_PANEL;
+  ftOut.textContent = (Math.round(feet * 100) / 100) + ' ft';
+  pOut.textContent = (Math.round(panels * 100) / 100) + ' panels  (' + Math.ceil(panels) + ' to cover)';
+}
+
 // ===== CARRIER QUOTE REQUEST =====
 
 // Skid height formula for panels:
@@ -1608,14 +1653,7 @@ ${loadLines}
 REQUIREMENTS:
 ${reqLines}
 ${date !== '—' ? 'Requested date: ' + date + '\n' : ''}${notes ? '\nNotes: ' + notes + '\n' : ''}
-Thank you!
-
-Sam Galaviz
-Olivec Canada
-sam@olivec.ca
-888-642-8889 | 403-679-2649
-Vancouver, Edmonton, Calgary, Toronto
-olivec.ca`;
+Thank you!`;
 
   document.getElementById('sq-preview').textContent = template;
   document.getElementById('sq-output').style.display = 'block';
@@ -1759,11 +1797,9 @@ function updateRefCalc() {
 
 function buildRefTable() {
   const examples = [
-    { qty: 100, label: '6H Panel Skid (100 panels)', l: 114, w: 72, lbsEa: 40, note: 'Includes stands (10 lbs ea) + 75 lb skid' },
-    { qty: 55,  label: '6H Panel Skid (55 panels)',  l: 114, w: 72, lbsEa: 40, note: 'Max per skid (new design)' },
-    { qty: 50,  label: '6H Panel Skid (50 panels)',  l: 114, w: 72, lbsEa: 40, note: 'Standard skid' },
-    { qty: 25,  label: '6H Panel Skid (25 panels)',  l: 114, w: 72, lbsEa: 40, note: 'Half skid' },
-    { qty: 10,  label: '6H Panel Skid (10 panels)',  l: 114, w: 72, lbsEa: 40, note: 'Small order' },
+    { qty: 100, label: '6H Panel Skid (100 panels)', l: 114, w: 72, lbsEa: 40, note: 'Standard skid' },
+    { qty: 50,  label: '6H Panel Skid (50 panels)',  l: 114, w: 72, lbsEa: 40, note: 'Half skid' },
+    { qty: 25,  label: '6H Panel Skid (25 panels)',  l: 114, w: 72, lbsEa: 40, note: 'Quarter skid' },
     { qty: 75,  label: 'Crowd Barrier Skid (75)',     l: 84,  w: 44, lbsEa: 32, fixedH: 98, barrier: true, note: 'Feet included — 84"×44"×98" skid' },
   ];
 
@@ -2085,7 +2121,7 @@ const PRESETS = {
       { name: "8H", fobCost: 45, quantity: 0, margin: 17.68, capacity: 450 },
       { name: "Other", fobCost: 68, quantity: 0, margin: 17.68, capacity: 650 },
     ],
-    shippingCosts: { Vancouver: 4500, "Prince Rupert": 4500, Calgary: 6000, Edmonton: 6000, Winnipeg: 0, Toronto: 8000 },
+    shippingCosts: { Vancouver: 6500, "Prince Rupert": 4500, Calgary: 8000, Edmonton: 8000, Winnipeg: 0, Toronto: 9000 },
   },
   usa: {
     label: "USA 4020",
@@ -2097,7 +2133,7 @@ const PRESETS = {
       { name: "4H", fobCost: 45, quantity: 0, margin: 17.68, capacity: 850 },
       { name: "8H", fobCost: 68, quantity: 0, margin: 17.68, capacity: 450 },
     ],
-    shippingCosts: { Vancouver: 4500, "Prince Rupert": 4500, Calgary: 6000, Edmonton: 6000, Winnipeg: 0, Toronto: 8000 },
+    shippingCosts: { Vancouver: 6500, "Prince Rupert": 4500, Calgary: 8000, Edmonton: 8000, Winnipeg: 0, Toronto: 9000 },
   },
   custom: {
     label: "Custom Container",
@@ -2109,7 +2145,7 @@ const PRESETS = {
       { name: "Custom 3", fobCost: 45, quantity: 0, margin: 17.68, capacity: 850 },
       { name: "Custom 4", fobCost: 68, quantity: 0, margin: 17.68, capacity: 450 },
     ],
-    shippingCosts: { Vancouver: 4500, "Prince Rupert": 4500, Calgary: 6000, Edmonton: 6000, Winnipeg: 0, Toronto: 8000 },
+    shippingCosts: { Vancouver: 6500, "Prince Rupert": 4500, Calgary: 8000, Edmonton: 8000, Winnipeg: 0, Toronto: 9000 },
   },
 };
 
@@ -2150,7 +2186,7 @@ function NI({ label, value, onChange, prefix, suffix }) {
 
 function OlivecContainerCalculator() {
   const [mode, setMode] = useState("canada");
-  const [oceanFreight, setOceanFreight] = useState(PRESETS.canada.oceanFreight);
+  const [oceanFreight, setOceanFreight] = useState(PRESETS.canada.shippingCosts["Calgary"]);
   const [drayage, setDrayage] = useState(PRESETS.canada.drayage);
   const [customs, setCustoms] = useState(PRESETS.canada.customs);
   const [admin, setAdmin] = useState(PRESETS.canada.admin);
@@ -2168,11 +2204,11 @@ function OlivecContainerCalculator() {
 
   const loadPreset = useCallback((key) => {
     const p = PRESETS[key];
-    setMode(key); setOceanFreight(p.oceanFreight); setDrayage(p.drayage);
+    setMode(key); setOceanFreight(p.shippingCosts[destination] ?? p.oceanFreight); setDrayage(p.drayage);
     setCustoms(p.customs); setAdmin(p.admin); setTariffRate(p.tariffRate);
     setContainerCapacity(p.containerCapacity);
     setPanels(p.panels.map(x => ({ ...x }))); setShippingCosts({ ...p.shippingCosts });
-  }, []);
+  }, [destination]);
 
   const updatePanel = useCallback((idx, field, val) => {
     setPanels(prev => prev.map((p, i) => i === idx ? { ...p, [field]: val } : p));
@@ -2329,7 +2365,7 @@ function OlivecContainerCalculator() {
             e('span', { style: { fontSize: '0.75rem', color: '#9999b0' } }, city),
             e('div', { style: { display: 'flex', alignItems: 'center', background: '#16162a', border: '1px solid #33335a', borderRadius: 6, overflow: 'hidden', marginTop: 4 } },
               e('span', { style: { paddingLeft: 6, color: '#9999b0', fontSize: '0.8rem' } }, '$'),
-              e('input', { type: 'number', value: shippingCosts[city], onChange: ev => setShippingCosts(prev => ({ ...prev, [city]: parseFloat(ev.target.value) || 0 })), style: { ...S.input, border: 'none', background: 'transparent' } }),
+              e('input', { type: 'number', value: shippingCosts[city], onChange: ev => { const v = parseFloat(ev.target.value) || 0; setShippingCosts(prev => ({ ...prev, [city]: v })); if (city === destination) setOceanFreight(v); }, style: { ...S.input, border: 'none', background: 'transparent' } }),
             ),
           )
         )
